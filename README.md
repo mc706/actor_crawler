@@ -1,6 +1,7 @@
 # Actor Crawler
 This project is a highspeed website crawler that is designed to take advantage of the actor model in order to quickly 
-crawl your website in search of broken links.
+crawl your website in search of broken links. Unlike a serial spider, this can handle ~1000 links per minute depending
+on your internet connection, the site speed, and the hardware you are running on.
 
 It is written in python, using thespian.py for the actor model code.
 
