@@ -5,7 +5,7 @@ stop:
 	python stop.py
 
 crawl:
-	python crawler.py a_lot_about_health
+	python crawler.py
 
 halt:
 	python halt.py
