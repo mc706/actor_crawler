@@ -52,6 +52,16 @@ class SiteStartMsg(BaseMsg):
         self.site = site
 
 
+class SiteFinishMsg(BaseMsg):
+    """
+    Site Scrape is finished
+    """
+
+    def __init__(self, output_file: str, time_elapsed: float) -> None:
+        self.output_file = output_file
+        self.time_elapsed = time_elapsed
+
+
 class CrawlRequestMsg(BaseMsg):
     """
     Request to Crawl.
@@ -59,10 +69,11 @@ class CrawlRequestMsg(BaseMsg):
     SiteActor -> CrawlActor
     """
 
-    def __init__(self, url: str, save_dir: str, snap: bool) -> None:
+    def __init__(self, url: str, save_dir: str, snap: bool, save_links: bool) -> None:
         self.url = url
         self.save_dir = save_dir
         self.snap = snap
+        self.save_links = save_links
 
 
 class CrawlResponseMsg(BaseMsg):

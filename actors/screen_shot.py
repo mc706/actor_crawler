@@ -1,3 +1,4 @@
+import logging
 from urllib.parse import urlparse
 
 from thespian.actors import ActorTypeDispatcher
@@ -5,6 +6,8 @@ from splinter import Browser
 
 from actors.messages import ScreenShotRequestMsg
 
+
+log = logging.getLogger('thespian.log')
 
 class ScreenShotActor(ActorTypeDispatcher):
     """
@@ -15,7 +18,7 @@ class ScreenShotActor(ActorTypeDispatcher):
         """
         Receive a request for screens hot
         """
-        print('ScreenShotActor[ScreenShotRequestMsg]', message)
+        log.debug('ScreenShotActor[ScreenShotRequestMsg] : ' + str(message))
         image_name = ('/screen' + str(urlparse(message.url).path).replace('/', '_')).rstrip('_') + '.png'
         result_path = message.save_dir + image_name
         with Browser('phantomjs') as browser:

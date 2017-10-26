@@ -10,7 +10,7 @@ def start_suite(name: str = None) -> None:
     """
     print('start_suite', name)
     system = ActorSystem('multiprocTCPBase', {'Admin Port': 1900})
-    actor = system.createActor(SuiteActor)
+    actor = system.createActor(SuiteActor, globalName='suite')
     message = SiteRequestMsg(name[0])
     system.tell(actor, message)
 

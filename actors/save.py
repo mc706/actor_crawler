@@ -1,8 +1,12 @@
+import json
+import logging
+
 from thespian.actors import ActorTypeDispatcher, ActorExitRequest
-import yaml
+
 
 from actors.messages import CrawlSaveMsg
 
+log = logging.getLogger('thespian.log')
 
 class SaveActor(ActorTypeDispatcher):
     """
@@ -13,6 +17,6 @@ class SaveActor(ActorTypeDispatcher):
         """
         Message requesting data be saved
         """
-        print("SaveActor[CrawlSaveMsg]", message)
-        with open(f"{message.save_dir}/pages.yml", "a") as report_file:
-            report_file.write(yaml.dump(message.data, default_flow_style=False))
+        log.debug("SaveActor[CrawlSaveMsg] : " + str(message))
+        with open(f"{message.save_dir}/pages.json", "a") as report_file:
+            report_file.write(json.dumps(message.data, indent=4) + ",\n")
