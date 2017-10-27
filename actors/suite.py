@@ -25,6 +25,7 @@ class SuiteActor(ActorTypeDispatcher):
         Receive a request for to start a crawl
         """
         log.debug('SuiteActor[SiteRequestMsg] : ' + str(message))
+        self.sender = sender
         if message.name and message.name in self.sites:
             suites = [message.name]
         else:
@@ -75,6 +76,7 @@ class SuiteActor(ActorTypeDispatcher):
                     report.write("{} | {}\n".format(error['status_code'], error['url']))
             else:
                 report.write("No Errors Found During Run")
+        self.send(self.sender, {})
         self.send(sender, ActorExitRequest())
 
     def receiveMsg_ActorExitRequest(self, message: ActorExitRequest, sender):

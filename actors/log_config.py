@@ -1,7 +1,5 @@
 import logging
 
-from thespian.actors import ActorSystem
-
 
 class actorLogFilter(logging.Filter):
     def filter(self, logrecord):
@@ -55,10 +53,3 @@ logcfg = {
         }
     }
 }
-
-capabilities = {
-    'Admin Port': 1900,
-    'Convention Address.IPv4': ('', 1900)
-}
-
-actsys = ActorSystem('multiprocTCPBase', capabilities=capabilities, logDefs=logcfg)

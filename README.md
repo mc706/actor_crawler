@@ -44,12 +44,10 @@ entry_points:
 Replacle the above sections as you see fit.
 
 ## Running:
-This system is setup for scale, so to get it running, you need to start the communication network first, start your job, the close the network once you are done.
 
-1. run `make start`
-2. run `python crawler.py test_com`
-3. wait for output
-4. run `make stop`
+```
+python crawler.py test_com
+```
 
 * Note if your run fails in the middle, or you want to start again but you are getting an address already in use error, try `killall python`
 

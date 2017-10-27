@@ -54,11 +54,13 @@ class CrawlActor(ActorTypeDispatcher):
         if message.snap:
             # Take ScreensShot
             screen_shot_msg = ScreenShotRequestMsg(url=message.url, save_dir=message.save_dir)
-            screen_shot_actor = self.createActor('actors.screen_shot.ScreenShotActor')
-            self.send(screen_shot_actor, screen_shot_msg)
+            if not self.screen_shot_actor:
+                self.screen_shot_actor = self.createActor('actors.screen_shot.ScreenShotActor')
+            self.send(self.screen_shot_actor, screen_shot_msg)
 
     def receiveMsg_ActorExitRequest(self, message: ActorExitRequest, sender: ActorTypeDispatcher) -> None:
         """
         Shutdown
         """
         logging.debug("CrawlActor[ActorExitRequest]")
+        self.send(self.screen_shot_actor, ActorExitRequest())
