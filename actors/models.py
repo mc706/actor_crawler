@@ -6,8 +6,15 @@ class Site:
     Site Represenation
     """
 
-    def __init__(self, key: str, name: str, domain: str, entry_points: List[str], check_third_party: bool = False,
-                 screen_shot: bool = False, output_links: bool = False):
+    def __init__(self,
+                 key: str,
+                 name: str,
+                 domain: str,
+                 entry_points: List[str],
+                 check_third_party: bool = False,
+                 screen_shot: bool = False,
+                 output_links: bool = False,
+                 include_query_strings: bool = False):
         self.key = key
         self.name = name
         self.domain = domain
@@ -15,6 +22,7 @@ class Site:
         self.check_third_party = check_third_party
         self.screen_shot = screen_shot
         self.output_links = output_links
+        self.include_query_strings = include_query_strings
 
 
     def __repr__(self):

@@ -8,6 +8,7 @@ from actors.messages import SiteRequestMsg, ConfigRequestMsg, ConfigResponseMsg,
 
 log = logging.getLogger('thespian.log')
 
+
 class SuiteActor(ActorTypeDispatcher):
     """
     Manages Suites
@@ -23,7 +24,7 @@ class SuiteActor(ActorTypeDispatcher):
         """
         Receive a request for to start a crawl
         """
-        log.debug('SuiteActor[SiteRequestMsg] : '  + str(message))
+        log.debug('SuiteActor[SiteRequestMsg] : ' + str(message))
         if message.name and message.name in self.sites:
             suites = [message.name]
         else:
@@ -37,11 +38,12 @@ class SuiteActor(ActorTypeDispatcher):
         """
         Response from config actor
         """
-        log.debug('SuiteActor[ConfigResponseMsg] : ' +  str(message))
+        log.debug('SuiteActor[ConfigResponseMsg] : ' + str(message))
         self.send(sender, ActorExitRequest())
         if message.site:
             site_start_msg = SiteStartMsg(message.site)
-            self.actors[message.site.key] =  self.createActor('actors.site.SiteActor', globalName='Site' + message.site.key)
+            self.actors[message.site.key] = self.createActor('actors.site.SiteActor',
+                                                             globalName='Site' + message.site.key)
             self.send(self.actors[message.site.key], site_start_msg)
 
     def receiveMsg_SiteFinishMsg(self, message: SiteFinishMsg, sender: ActorTypeDispatcher) -> None:
@@ -55,7 +57,7 @@ class SuiteActor(ActorTypeDispatcher):
             data = json.loads(json_data)
         with open(message.output_file, 'w') as output:
             output.write(json_data)
-        print("Run Completed in {}".format(message.time_elapsed))
+        print("Run Completed in {0:.2f}s".format(message.time_elapsed))
         print("{} urls scanned".format(len(data)))
         errors = [case for case in data if case['status_code'] != 200]
         if errors:
@@ -65,14 +67,14 @@ class SuiteActor(ActorTypeDispatcher):
         else:
             print("No Errors Found During Run")
         with open(message.output_file.replace('pages.json', 'report.txt'), 'w') as report:
-            report.write("Run Completed in {}\n".format(message.time_elapsed))
+            report.write("Run Completed in {0:.2f}s\n".format(message.time_elapsed))
             report.write("{} urls scanned\n".format(len(data)))
             if errors:
                 report.write("{} Errors found:\n".format(len(errors)))
                 for error in errors:
                     report.write("{} | {}\n".format(error['status_code'], error['url']))
             else:
-                print("No Errors Found During Run")
+                report.write("No Errors Found During Run")
         self.send(sender, ActorExitRequest())
 
     def receiveMsg_ActorExitRequest(self, message: ActorExitRequest, sender):

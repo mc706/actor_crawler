@@ -30,17 +30,19 @@ class CrawlActor(ActorTypeDispatcher):
         result['url'] = message.url
         result['status_code'] = response.status_code
         result['timing'] = response.elapsed.total_seconds()
-        if message.save_links:
-            result['links_found'] = []
-        soup = BS(response.text, 'html.parser')
-        for link in soup.find_all('a'):
-            urls.add(link.get('href'))
+        result['content-type'] = response.headers['content-type']
+        if 'html' in response.headers['content-type']:
             if message.save_links:
-                result['links_found'].append({
-                    'text': link.text,
-                    'href': link.get('href')
-                })
-        result['page_title'] = soup.title.text
+                result['links_found'] = []
+            soup = BS(response.text, 'html.parser')
+            for link in soup.find_all('a'):
+                urls.add(link.get('href'))
+                if message.save_links:
+                    result['links_found'].append({
+                        'text': link.text,
+                        'href': link.get('href')
+                    })
+            result['page_title'] = soup.title.text
         # Respond Up with found urls
         response_msg = CrawlResponseMsg(url=message.url, urls=urls)
         self.send(sender, response_msg)

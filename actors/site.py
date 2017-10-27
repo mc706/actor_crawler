@@ -105,4 +105,4 @@ class SiteActor(ActorTypeDispatcher):
         return self.site.domain == domain
 
     def is_relative_url(self, url):
-        return url.startswith('/') and url[1] != '/'
+        return url and url.startswith('/') and len(url) > 1 and url[1] != '/'
