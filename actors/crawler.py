@@ -1,5 +1,3 @@
-import logging
-
 import requests
 from bs4 import BeautifulSoup as BS
 from thespian.actors import ActorTypeDispatcher, ActorExitRequest
@@ -7,8 +5,7 @@ from thespian.troupe import troupe
 import tqdm
 
 from actors.messages import CrawlRequestMsg, CrawlResponseMsg, CrawlSaveMsg, ScreenShotRequestMsg
-
-log = logging.getLogger('thespian.log')
+from actors.decorator import log_arguments
 
 @troupe(25)
 class CrawlActor(ActorTypeDispatcher):
@@ -16,11 +13,11 @@ class CrawlActor(ActorTypeDispatcher):
     Actor Troupe responsible for scraping urls
     """
 
+    @log_arguments
     def receiveMsg_CrawlRequestMsg(self, message: CrawlRequestMsg, sender: ActorTypeDispatcher) -> None:
         """
         Get a crawl request for a url
         """
-        log.debug("CrawlActor[CrawlRequestMsg] : " + str(message))
         result = {}
         urls = set()
         headers = {
@@ -58,9 +55,9 @@ class CrawlActor(ActorTypeDispatcher):
                 self.screen_shot_actor = self.createActor('actors.screen_shot.ScreenShotActor')
             self.send(self.screen_shot_actor, screen_shot_msg)
 
+    @log_arguments
     def receiveMsg_ActorExitRequest(self, message: ActorExitRequest, sender: ActorTypeDispatcher) -> None:
         """
         Shutdown
         """
-        logging.debug("CrawlActor[ActorExitRequest]")
         self.send(self.screen_shot_actor, ActorExitRequest())

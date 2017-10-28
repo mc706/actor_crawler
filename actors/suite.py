@@ -1,12 +1,11 @@
 import os
 import json
-import logging
 
 from thespian.actors import ActorTypeDispatcher, ActorExitRequest
 
 from actors.messages import SiteRequestMsg, ConfigRequestMsg, ConfigResponseMsg, SiteStartMsg, SiteFinishMsg
+from actors.decorator import log_arguments
 
-log = logging.getLogger('thespian.log')
 
 
 class SuiteActor(ActorTypeDispatcher):
@@ -18,13 +17,12 @@ class SuiteActor(ActorTypeDispatcher):
         super().__init__()
         self.sites = next(os.walk('sites'))[1]
         self.actors = {}
-        log.debug('SuiteActor : ' + str(self.sites))
 
+    @log_arguments
     def receiveMsg_SiteRequestMsg(self, message: SiteRequestMsg, sender) -> None:
         """
         Receive a request for to start a crawl
         """
-        log.debug('SuiteActor[SiteRequestMsg] : ' + str(message))
         self.sender = sender
         if message.name and message.name in self.sites:
             suites = [message.name]
@@ -35,11 +33,11 @@ class SuiteActor(ActorTypeDispatcher):
             config_actor = self.createActor('actors.config.ConfigActor')
             self.send(config_actor, config_msg)
 
+    @log_arguments
     def receiveMsg_ConfigResponseMsg(self, message: ConfigResponseMsg, sender: ActorTypeDispatcher) -> None:
         """
         Response from config actor
         """
-        log.debug('SuiteActor[ConfigResponseMsg] : ' + str(message))
         self.send(sender, ActorExitRequest())
         if message.site:
             site_start_msg = SiteStartMsg(message.site)
@@ -79,10 +77,10 @@ class SuiteActor(ActorTypeDispatcher):
         self.send(self.sender, {})
         self.send(sender, ActorExitRequest())
 
+    @log_arguments
     def receiveMsg_ActorExitRequest(self, message: ActorExitRequest, sender):
         """
         Shutdown the sytem
         """
-        log.debug('SuiteActor[ActorExitRequest]')
         for actor in self.actors:
             self.send(self.actors[actor], ActorExitRequest())

@@ -1,12 +1,9 @@
-import logging
-
 import yaml
 from thespian.actors import ActorTypeDispatcher
 
 from actors.messages import ConfigRequestMsg, ConfigResponseMsg
 from actors.models import Site
-
-log = logging.getLogger('thespian.log')
+from actors.decorator import log_arguments
 
 
 class ConfigActor(ActorTypeDispatcher):
@@ -14,11 +11,11 @@ class ConfigActor(ActorTypeDispatcher):
     Load a Config
     """
 
+    @log_arguments
     def receiveMsg_ConfigRequestMsg(self, message: ConfigRequestMsg, sender: ActorTypeDispatcher) -> None:
         """
         Load the requested config
         """
-        log.debug('ConfigActor[ConfigRequestMsg] : ' + str(message))
         try:
             with open(f"{message.directory}/config.yml", "r") as config_file:
                 config = yaml.load(config_file)

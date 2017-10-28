@@ -3,14 +3,13 @@ import pprint
 from datetime import datetime
 import time
 from urllib.parse import urlparse
-import logging
 
 from thespian.actors import ActorTypeDispatcher, ActorExitRequest
 from tqdm import tqdm
 
 from actors.messages import CrawlRequestMsg, CrawlResponseMsg, SiteStartMsg, SiteFinishMsg
+from actors.decorator import log_arguments
 
-log = logging.getLogger('thespian.log')
 
 class SiteActor(ActorTypeDispatcher):
     """
@@ -23,11 +22,9 @@ class SiteActor(ActorTypeDispatcher):
         Start crawling session
         """
 
-        log.debug("SiteActor[crawl] : {} {} {}".format(len(self.urls), len(self.in_flight_urls), len(self.visited_urls)))
         for url in self.urls.copy():
             if url in self.visited_urls or url in self.in_flight_urls:
                 self.urls.remove(url)
-        log.debug("SiteActor[crawl_clean] : {} {} {}".format(len(self.urls), len(self.in_flight_urls), len(self.visited_urls)))
         self.progress.total = (len(self.urls) + len(self.in_flight_urls) + len(self.visited_urls))
         self.progress.update(len(self.visited_urls) - self.last_length)
         while self.urls and len(self.in_flight_urls) <= self.maximum_sessions:
@@ -44,17 +41,17 @@ class SiteActor(ActorTypeDispatcher):
             log.info("Finished scraping")
             now = time.time()
             elasped = now - self.started
-            message =SiteFinishMsg(
+            message = SiteFinishMsg(
                 output_file=self.save_dir + '/pages.json',
                 time_elapsed=elasped
             )
             self.send(self.suite_actor, message)
 
+    @log_arguments
     def receiveMsg_SiteStartMsg(self, message: SiteStartMsg, sender: ActorTypeDispatcher) -> None:
         """
         Site Start
         """
-        log.debug("SiteActor[SiteStartMsg] : " + str(message))
         site = message.site
         self.started = time.time()
         self.suite_actor = sender
@@ -70,11 +67,11 @@ class SiteActor(ActorTypeDispatcher):
         self.last_length = 0
         self.crawl()
 
+    @log_arguments
     def receiveMsg_CrawlResponseMsg(self, message: CrawlResponseMsg, sender: ActorTypeDispatcher) -> None:
         """
         Crawler responds with the found url
         """
-        log.debug("SiteActor[CrawlResponseMsg] : " + str(message))
         url = message.url
         self.in_flight_urls.remove(url)
         self.last_length = len(self.visited_urls)
@@ -88,11 +85,11 @@ class SiteActor(ActorTypeDispatcher):
                 self.urls.add(found_url)
         self.crawl()
 
+    @log_arguments
     def receiveMsg_ActorExitRequest(self, message: ActorExitRequest, sender) -> None:
         """
         On Shutdown
         """
-        log.debug('SiteActor[ActorExitRequest]')
         with open(os.path.join(self.save_dir, 'debug.dump.txt'), 'w') as dump:
             pp = pprint.PrettyPrinter(indent=4)
             dump.write(pp.pformat(self.__dict__))
