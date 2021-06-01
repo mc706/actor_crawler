@@ -9,5 +9,5 @@ selenium==3.6.0
 splinter==0.7.6
 thespian==3.8.1
 tqdm==4.19.4
-urllib3==1.22
+urllib3==1.26.5
 wheel==0.24.0
