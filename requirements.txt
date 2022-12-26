@@ -10,4 +10,4 @@ splinter==0.7.6
 thespian==3.8.1
 tqdm==4.19.4
 urllib3==1.22
-wheel==0.24.0
+wheel==0.38.1
